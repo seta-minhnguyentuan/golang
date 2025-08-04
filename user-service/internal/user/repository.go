@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, user *User) (*User, error)
 	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindByID(ctx context.Context, id uuid.UUID) (*User, error)
 	FetchAll(ctx context.Context) ([]*User, error)
 	Login(ctx context.Context, email, password string) (*User, error)
 }
@@ -34,6 +36,14 @@ func (r *GormRepository) FindByEmail(ctx context.Context, email string) (*User, 
 	return &user, nil
 }
 
+func (r *GormRepository) FindByID(ctx context.Context, id uuid.UUID) (*User, error) {
+	var user User
+	if err := r.DB.WithContext(ctx).Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (r *GormRepository) FetchAll(ctx context.Context) ([]*User, error) {
 	var users []*User
 	if err := r.DB.WithContext(ctx).Find(&users).Error; err != nil {
@@ -48,7 +58,6 @@ func (r *GormRepository) Login(ctx context.Context, email, password string) (*Us
 		return nil, err
 	}
 
-	// Verify password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return nil, errors.New("invalid credentials")
 	}

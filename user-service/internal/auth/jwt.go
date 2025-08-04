@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var jwtSecret = []byte("your-secret-key") // In production, this should come from environment variables
+var jwtSecret = []byte("your-secret-key")
 
 type Claims struct {
 	UserID   string `json:"user_id"`
