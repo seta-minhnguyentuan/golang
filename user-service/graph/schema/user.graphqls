@@ -1,5 +1,7 @@
+scalar UUID
+
 type User {
-  id: ID!
+  id: UUID!
   username: String!
   email: String!
   role: String!

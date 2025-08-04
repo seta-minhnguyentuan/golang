@@ -28,14 +28,15 @@ func (s *Service) CreateUser(ctx context.Context, username, email, password, rol
 }
 
 func (s *Service) Login(ctx context.Context, email, password string) (*User, error) {
-	u, err := s.Repo.FindByEmail(ctx, email)
+	user, err := s.Repo.Login(ctx, email, password)
 	if err != nil {
 		return nil, err
 	}
-	if bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password)) != nil {
-		return nil, errors.New("invalid credentials")
-	}
-	return u, nil
+	return user, nil
+}
+
+func (s *Service) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	return s.Repo.FindByEmail(ctx, email)
 }
 
 func (s *Service) FetchUsers(ctx context.Context) ([]*User, error) {
