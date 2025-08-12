@@ -8,10 +8,10 @@ import (
 )
 
 type FolderRepository interface {
-	Create(folder *models.Folder) error
-	GetByID(id uuid.UUID) (*models.Folder, error)
-	List() ([]models.Folder, error)
-	Delete(id uuid.UUID) error
+	CreateFolder(folder *models.Folder) error
+	GetFolderByID(id uuid.UUID) (*models.Folder, error)
+	ListFolders() ([]models.Folder, error)
+	DeleteFolder(id uuid.UUID) error
 }
 
 type folderRepository struct {
@@ -22,11 +22,11 @@ func NewFolderRepository(db *gorm.DB) FolderRepository {
 	return &folderRepository{db: db}
 }
 
-func (r *folderRepository) Create(folder *models.Folder) error {
+func (r *folderRepository) CreateFolder(folder *models.Folder) error {
 	return r.db.Create(folder).Error
 }
 
-func (r *folderRepository) GetByID(id uuid.UUID) (*models.Folder, error) {
+func (r *folderRepository) GetFolderByID(id uuid.UUID) (*models.Folder, error) {
 	var folder models.Folder
 	err := r.db.Where("id = ?", id).First(&folder).Error
 	if err != nil {
@@ -35,12 +35,12 @@ func (r *folderRepository) GetByID(id uuid.UUID) (*models.Folder, error) {
 	return &folder, nil
 }
 
-func (r *folderRepository) List() ([]models.Folder, error) {
+func (r *folderRepository) ListFolders() ([]models.Folder, error) {
 	var folders []models.Folder
 	err := r.db.Find(&folders).Error
 	return folders, err
 }
 
-func (r *folderRepository) Delete(id uuid.UUID) error {
+func (r *folderRepository) DeleteFolder(id uuid.UUID) error {
 	return r.db.Delete(&models.Folder{}, id).Error
 }

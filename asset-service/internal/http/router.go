@@ -2,20 +2,14 @@ package httpserver
 
 import (
 	"asset-service/internal/handlers"
+	"asset-service/internal/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type RouterDeps struct {
-	FolderService FolderService
-}
-
-type FolderService interface {
-	Create(name string) (any, error)
-	GetByID(id string) (any, error)
-	List() ([]any, error)
-	Delete(id string) error
+	FolderService services.FolderService
 }
 
 func NewRouter(deps RouterDeps) *gin.Engine {
@@ -31,10 +25,10 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 	folders := v1.Group("/folders")
 	{
 		h := handlers.NewFolderHandler(deps.FolderService)
-		folders.POST("", h.Create)
-		folders.GET("", h.List)
-		folders.GET("/:id", h.GetByID)
-		folders.DELETE("/:id", h.Delete)
+		folders.POST("", h.CreateFolder)
+		folders.GET("", h.ListFolders)
+		folders.GET("/:id", h.GetFolderByID)
+		folders.DELETE("/:id", h.DeleteFolder)
 	}
 
 	return r

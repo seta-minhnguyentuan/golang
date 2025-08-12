@@ -1,27 +1,21 @@
 package handlers
 
 import (
+	"asset-service/internal/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type FolderService interface {
-	Create(name string) (any, error)
-	GetByID(id string) (any, error)
-	List() ([]any, error)
-	Delete(id string) error
-}
-
 type FolderHandler struct {
-	svc FolderService
+	svc services.FolderService
 }
 
-func NewFolderHandler(svc FolderService) *FolderHandler {
+func NewFolderHandler(svc services.FolderService) *FolderHandler {
 	return &FolderHandler{svc: svc}
 }
 
-func (h *FolderHandler) Create(c *gin.Context) {
+func (h *FolderHandler) CreateFolder(c *gin.Context) {
 	var req struct {
 		Name string `json:"name" binding:"required"`
 	}
@@ -31,7 +25,7 @@ func (h *FolderHandler) Create(c *gin.Context) {
 		return
 	}
 
-	result, err := h.svc.Create(req.Name)
+	result, err := h.svc.CreateFolder(req.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -40,8 +34,8 @@ func (h *FolderHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
-func (h *FolderHandler) List(c *gin.Context) {
-	result, err := h.svc.List()
+func (h *FolderHandler) ListFolders(c *gin.Context) {
+	result, err := h.svc.ListFolders()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,10 +44,10 @@ func (h *FolderHandler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (h *FolderHandler) GetByID(c *gin.Context) {
+func (h *FolderHandler) GetFolderByID(c *gin.Context) {
 	id := c.Param("id")
 
-	result, err := h.svc.GetByID(id)
+	result, err := h.svc.GetFolderByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -62,10 +56,10 @@ func (h *FolderHandler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (h *FolderHandler) Delete(c *gin.Context) {
+func (h *FolderHandler) DeleteFolder(c *gin.Context) {
 	id := c.Param("id")
 
-	err := h.svc.Delete(id)
+	err := h.svc.DeleteFolder(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
