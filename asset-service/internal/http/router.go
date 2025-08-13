@@ -10,6 +10,7 @@ import (
 
 type RouterDeps struct {
 	FolderService services.FolderService
+	NoteService   services.NoteService
 }
 
 func NewRouter(deps RouterDeps) *gin.Engine {
@@ -29,6 +30,15 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 		folders.GET("", h.ListFolders)
 		folders.GET("/:id", h.GetFolderByID)
 		folders.DELETE("/:id", h.DeleteFolder)
+	}
+
+	notes := v1.Group("/notes")
+	{
+		h := handlers.NewNoteHandler(deps.NoteService)
+		notes.POST("", h.CreateNote)
+		// notes.GET("", h.ListNotes)
+		// notes.GET("/:id", h.GetNoteByID)
+		// notes.DELETE("/:id", h.DeleteNote)
 	}
 
 	return r
