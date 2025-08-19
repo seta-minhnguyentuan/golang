@@ -3,12 +3,12 @@
 package model
 
 import (
-	"user-service/internal/user"
+	"user-service/internal/models"
 )
 
 type AuthPayload struct {
-	Token string     `json:"token"`
-	User  *user.User `json:"user"`
+	Token string       `json:"token"`
+	User  *models.User `json:"user"`
 }
 
 type Mutation struct {

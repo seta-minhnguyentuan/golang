@@ -1,7 +1,7 @@
 package graph
 
-import "user-service/internal/user"
+import "user-service/internal/services"
 
 type Resolver struct {
-	UserService *user.Service
+	UserService services.UserService
 }

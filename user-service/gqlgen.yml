@@ -12,4 +12,4 @@ resolver:
 
 models:
   User:
-    model: user-service/internal/user.User
+    model: user-service/internal/models.User

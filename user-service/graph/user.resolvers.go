@@ -7,14 +7,14 @@ package graph
 import (
 	"context"
 	"fmt"
+	"shared/utils"
 	"user-service/graph/generated"
 	"user-service/graph/model"
-	"user-service/internal/auth"
-	"user-service/internal/user"
+	"user-service/internal/models"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, username string, email string, password string, role string) (*user.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, username string, email string, password string, role string) (*models.User, error) {
 	return r.UserService.CreateUser(ctx, username, email, password, role)
 }
 
@@ -26,7 +26,7 @@ func (r *mutationResolver) Login(ctx context.Context, email string, password str
 	}
 
 	// Generate JWT token
-	token, err := auth.GenerateToken(user.ID.String(), user.Email, user.Role, user.Username)
+	token, err := utils.GenerateToken(user.ID.String(), user.Email, user.Role, user.Username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
@@ -43,12 +43,12 @@ func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
 }
 
 // FetchUsers is the resolver for the fetchUsers field.
-func (r *queryResolver) FetchUsers(ctx context.Context) ([]*user.User, error) {
+func (r *queryResolver) FetchUsers(ctx context.Context) ([]*models.User, error) {
 	return r.UserService.FetchUsers(ctx)
 }
 
 // ID is the resolver for the id field.
-func (r *userResolver) ID(ctx context.Context, obj *user.User) (string, error) {
+func (r *userResolver) ID(ctx context.Context, obj *models.User) (string, error) {
 	return obj.ID.String(), nil
 }
 
