@@ -1,62 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { teamService } from '../services/teamService';
-import type { Team } from '../types';
+import React, { useState } from 'react';
+import { useTeams, useAuth } from '../hooks/useApi';
 
 const Teams: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { teams, loading, error, createTeam } = useTeams();
+  const { isManager } = useAuth();
+  
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
-  const [newTeamDescription, setNewTeamDescription] = useState('');
 
-  useEffect(() => {
-    loadTeams();
-  }, []);
-
-  const loadTeams = async () => {
-    try {
-      setLoading(true);
-      const teamsData = await teamService.getAllTeams();
-      setTeams(teamsData);
-    } catch (err) {
-      setError('Failed to load teams');
-      console.error('Error loading teams:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createTeam = async (e: React.FormEvent) => {
+  const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newTeamName.trim()) return;
+    
     try {
-      await teamService.createTeam({
-        name: newTeamName,
-        description: newTeamDescription,
-      });
+      await createTeam(newTeamName);
       setNewTeamName('');
-      setNewTeamDescription('');
       setShowCreateForm(false);
-      loadTeams();
     } catch (err) {
-      setError('Failed to create team');
       console.error('Error creating team:', err);
     }
   };
 
-  if (loading) return <div>Loading teams...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return <div className="loading">Loading teams...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="teams-container">
       <div className="teams-header">
         <h2>Teams</h2>
-        <button onClick={() => setShowCreateForm(true)}>Create Team</button>
+        {isManager && (
+          <button 
+            className="create-btn" 
+            onClick={() => setShowCreateForm(true)}
+          >
+            Create Team
+          </button>
+        )}
       </div>
 
       {showCreateForm && (
         <div className="create-form">
-          <form onSubmit={createTeam}>
+          <form onSubmit={handleCreateTeam}>
             <h3>Create New Team</h3>
             <div className="form-group">
               <label htmlFor="teamName">Team Name:</label>
@@ -66,14 +50,7 @@ const Teams: React.FC = () => {
                 value={newTeamName}
                 onChange={(e) => setNewTeamName(e.target.value)}
                 required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="teamDescription">Description:</label>
-              <textarea
-                id="teamDescription"
-                value={newTeamDescription}
-                onChange={(e) => setNewTeamDescription(e.target.value)}
+                placeholder="Enter team name"
               />
             </div>
             <div className="form-buttons">
@@ -88,18 +65,40 @@ const Teams: React.FC = () => {
 
       <div className="teams-list">
         {teams.length === 0 ? (
-          <p>No teams found. Create your first team!</p>
+          <p>No teams found. {isManager ? 'Create your first team!' : 'No teams available.'}</p>
         ) : (
           teams.map((team) => (
             <div key={team.id} className="team-card">
-              <h3>{team.name}</h3>
-              <p>{team.description}</p>
+              <h3>{team.teamName}</h3>
               <div className="team-info">
-                <span>Members: {team.members?.length || 0}</span>
-                <span>Managers: {team.managers?.length || 0}</span>
+                <div className="team-members">
+                  <h4>Managers ({team.managers?.length || 0})</h4>
+                  {team.managers?.length > 0 && (
+                    <ul>
+                      {team.managers.map((manager) => (
+                        <li key={manager.userId}>
+                          {manager.userName} ({manager.email})
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="team-members">
+                  <h4>Members ({team.members?.length || 0})</h4>
+                  {team.members?.length > 0 && (
+                    <ul>
+                      {team.members.map((member) => (
+                        <li key={member.userId}>
+                          {member.userName} ({member.email})
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
               <div className="team-dates">
-                <small>Created: {new Date(team.created_at).toLocaleDateString()}</small>
+                <small>Created: {new Date(team.createdAt).toLocaleDateString()}</small>
+                <small>Updated: {new Date(team.updatedAt).toLocaleDateString()}</small>
               </div>
             </div>
           ))

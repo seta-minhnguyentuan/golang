@@ -159,7 +159,7 @@ const Assets: React.FC = () => {
                   <option value="">Select a folder</option>
                   {folders.map((folder) => (
                     <option key={folder.id} value={folder.id}>
-                      {folder.name}
+                      {folder.folderName}
                     </option>
                   ))}
                 </select>
@@ -193,9 +193,9 @@ const Assets: React.FC = () => {
             ) : (
               folders.map((folder) => (
                 <div key={folder.id} className="folder-card">
-                  <h3>{folder.name}</h3>
+                  <h3>{folder.folderName}</h3>
                   <div className="folder-dates">
-                    <small>Created: {new Date(folder.created_at).toLocaleDateString()}</small>
+                    <small>Created: {new Date(folder.createdAt).toLocaleDateString()}</small>
                   </div>
                   <div className="folder-actions">
                     <button onClick={() => deleteFolder(folder.id)}>Delete</button>
@@ -211,11 +211,11 @@ const Assets: React.FC = () => {
             ) : (
               notes.map((note) => (
                 <div key={note.id} className="note-card">
-                  <h3>{note.title}</h3>
-                  <p>{note.content.substring(0, 100)}...</p>
+                  <h3>{note.noteName}</h3>
+                  <p>{note.noteContent.substring(0, 100)}...</p>
                   <div className="note-info">
-                    <small>Folder ID: {note.folder_id}</small>
-                    <small>Created: {new Date(note.created_at).toLocaleDateString()}</small>
+                    <small>Folder ID: {note.folderId}</small>
+                    <small>Created: {new Date(note.createdAt).toLocaleDateString()}</small>
                   </div>
                   <div className="note-actions">
                     <button onClick={() => deleteNote(note.id)}>Delete</button>

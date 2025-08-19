@@ -1,8 +1,9 @@
+// User Service Types
 export interface User {
   id: string;
   username: string;
   email: string;
-  role: string;
+  role: 'manager' | 'member';
 }
 
 export interface AuthPayload {
@@ -19,33 +20,55 @@ export interface CreateUserRequest {
   username: string;
   email: string;
   password: string;
-  role: string;
+  role: 'manager' | 'member';
+}
+
+// Team Management Types
+export interface TeamMember {
+  userId: string;
+  userName: string;
+  email: string;
+  role: 'manager' | 'member';
+  joinedAt: string;
 }
 
 export interface Team {
   id: string;
-  name: string;
-  description?: string;
-  members: User[];
-  managers: User[];
-  created_at: string;
-  updated_at: string;
+  teamName: string;
+  managers: TeamMember[];
+  members: TeamMember[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateTeamRequest {
-  name: string;
-  description?: string;
+  teamName: string;
+  managers?: {
+    userId: string;
+    userName: string;
+  }[];
+  members?: {
+    userId: string;
+    userName: string;
+  }[];
 }
 
 export interface AddMemberRequest {
-  user_id: string;
+  userId: string;
 }
 
+export interface TeamsResponse {
+  teams: Team[];
+}
+
+// Asset Service Types
 export interface Folder {
   id: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
+  folderName: string;
+  notes: Note[];
+  sharings: Sharing[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateFolderRequest {
@@ -54,11 +77,12 @@ export interface CreateFolderRequest {
 
 export interface Note {
   id: string;
-  title: string;
-  content: string;
-  folder_id: string;
-  created_at: string;
-  updated_at: string;
+  noteName: string;
+  noteContent: string;
+  folderId: string;
+  sharings: Sharing[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateNoteRequest {
@@ -70,4 +94,30 @@ export interface CreateNoteRequest {
 export interface UpdateNoteRequest {
   title: string;
   content: string;
+}
+
+// Sharing Types
+export interface Sharing {
+  id: string;
+  userId: string;
+  permission: 'read' | 'write';
+  folderId?: string;
+  noteId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShareRequest {
+  userId: string;
+  permission: 'read' | 'write';
+}
+
+// API Response Types
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+}
+
+export interface ErrorResponse {
+  error: string;
 }
