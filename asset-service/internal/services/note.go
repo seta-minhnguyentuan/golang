@@ -10,10 +10,10 @@ import (
 
 type NoteService interface {
 	CreateNote(name string, content string, folderId uuid.UUID) (*models.Note, error)
-	// GetNote(id string) (models.Note, error)
-	// ListNotes() ([]models.Note, error)
-	// UpdateNote(id string, note any) (models.Note, error)
-	// DeleteNote(id string) error
+	GetNote(id string) (models.Note, error)
+	ListNotes() ([]models.Note, error)
+	UpdateNote(id string, note any) (models.Note, error)
+	DeleteNote(id string) error
 }
 
 type noteService struct {
@@ -40,4 +40,39 @@ func (s *noteService) CreateNote(name string, content string, folderId uuid.UUID
 	}
 
 	return note, nil
+}
+
+func (s *noteService) ListNotes() ([]models.Note, error) {
+	notes, err := s.repo.ListNotes()
+	if err != nil {
+		return nil, fmt.Errorf("failed to list notes: %w", err)
+	}
+
+	return notes, nil
+}
+
+func (s *noteService) GetNote(id string) (models.Note, error) {
+	note, err := s.repo.GetNote(id)
+	if err != nil {
+		return models.Note{}, fmt.Errorf("failed to get note: %w", err)
+	}
+
+	return note, nil
+}
+
+func (s *noteService) UpdateNote(id string, note any) (models.Note, error) {
+	updatedNote, err := s.repo.UpdateNote(id, note)
+	if err != nil {
+		return models.Note{}, fmt.Errorf("failed to update note: %w", err)
+	}
+
+	return updatedNote, nil
+}
+
+func (s *noteService) DeleteNote(id string) error {
+	if err := s.repo.DeleteNote(id); err != nil {
+		return fmt.Errorf("failed to delete note: %w", err)
+	}
+
+	return nil
 }

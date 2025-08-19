@@ -33,8 +33,12 @@ func main() {
 	folderRepo := repository.NewFolderRepository(db)
 	folderSvc := services.NewFolderService(folderRepo)
 
+	noteRepo := repository.NewNoteRepository(db)
+	noteSvc := services.NewNoteService(noteRepo)
+
 	engine := httpserver.NewRouter(httpserver.RouterDeps{
 		FolderService: folderSvc,
+		NoteService:   noteSvc,
 	})
 
 	srv := &http.Server{

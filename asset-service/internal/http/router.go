@@ -4,6 +4,7 @@ import (
 	"asset-service/internal/handlers"
 	"asset-service/internal/services"
 	"net/http"
+	"shared/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,7 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 	v1 := r.Group("/api/v1")
 
 	folders := v1.Group("/folders")
+	folders.Use(middlewares.AuthMiddleware())
 	{
 		h := handlers.NewFolderHandler(deps.FolderService)
 		folders.POST("", h.CreateFolder)
@@ -36,9 +38,10 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 	{
 		h := handlers.NewNoteHandler(deps.NoteService)
 		notes.POST("", h.CreateNote)
-		// notes.GET("", h.ListNotes)
-		// notes.GET("/:id", h.GetNoteByID)
-		// notes.DELETE("/:id", h.DeleteNote)
+		notes.GET("", h.ListNotes)
+		notes.GET("/:id", h.GetNote)
+		notes.PUT("/:id", h.UpdateNote)
+		notes.DELETE("/:id", h.DeleteNote)
 	}
 
 	return r

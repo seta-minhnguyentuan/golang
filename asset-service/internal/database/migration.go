@@ -14,6 +14,7 @@ func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.Folder{},
 		&models.Note{},
-		&models.Sharing{},
+		&models.FolderSharing{},
+		&models.NoteSharing{},
 	)
 }

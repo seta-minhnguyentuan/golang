@@ -6,6 +6,6 @@ type ServerConfig struct {
 
 func LoadServerConfig() ServerConfig {
 	return ServerConfig{
-		Port: getEnv("HTTP_PORT", "8080"),
+		Port: getEnv("SERVER_PORT", "7070"),
 	}
 }

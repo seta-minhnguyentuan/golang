@@ -1,9 +1,9 @@
 package router
 
 import (
+	"shared/middlewares"
 	"user-service/graph"
 	"user-service/graph/generated"
-	"user-service/internal/auth"
 	"user-service/internal/team"
 	"user-service/internal/user"
 
@@ -32,7 +32,7 @@ func (r *Router) SetupRoutes(engine *gin.Engine) {
 	}
 
 	teamsGroup := engine.Group("/teams")
-	teamsGroup.Use(auth.JWTMiddleware())
+	teamsGroup.Use(middlewares.AuthMiddleware())
 	{
 		teamsGroup.GET("", r.TeamHandler.GetAllTeams)
 		teamsGroup.POST("", r.TeamHandler.CreateTeam)
