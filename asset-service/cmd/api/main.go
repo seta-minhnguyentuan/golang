@@ -36,9 +36,13 @@ func main() {
 	noteRepo := repository.NewNoteRepository(db)
 	noteSvc := services.NewNoteService(noteRepo)
 
+	sharingRepo := repository.NewSharingRepository(db)
+	sharingSvc := services.NewSharingService(sharingRepo, folderRepo, noteRepo)
+
 	engine := httpserver.NewRouter(httpserver.RouterDeps{
-		FolderService: folderSvc,
-		NoteService:   noteSvc,
+		FolderService:  folderSvc,
+		NoteService:    noteSvc,
+		SharingService: sharingSvc,
 	})
 
 	srv := &http.Server{

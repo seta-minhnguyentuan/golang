@@ -45,7 +45,7 @@ func (h *FolderHandler) ListFolders(c *gin.Context) {
 }
 
 func (h *FolderHandler) GetFolderByID(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("folderId")
 
 	result, err := h.svc.GetFolderByID(id)
 	if err != nil {
@@ -57,7 +57,7 @@ func (h *FolderHandler) GetFolderByID(c *gin.Context) {
 }
 
 func (h *FolderHandler) DeleteFolder(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("folderId")
 
 	err := h.svc.DeleteFolder(id)
 	if err != nil {

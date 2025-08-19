@@ -49,7 +49,7 @@ func (h *NoteHandler) ListNotes(c *gin.Context) {
 }
 
 func (h *NoteHandler) GetNote(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("noteId")
 	note, err := h.NoteService.GetNote(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -69,7 +69,7 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
+	id := c.Param("noteId")
 	updatedNote, err := h.NoteService.UpdateNote(id, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -80,7 +80,7 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 }
 
 func (h *NoteHandler) DeleteNote(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("noteId")
 	if err := h.NoteService.DeleteNote(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

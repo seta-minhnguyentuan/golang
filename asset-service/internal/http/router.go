@@ -10,8 +10,9 @@ import (
 )
 
 type RouterDeps struct {
-	FolderService services.FolderService
-	NoteService   services.NoteService
+	FolderService  services.FolderService
+	NoteService    services.NoteService
+	SharingService services.SharingService
 }
 
 func NewRouter(deps RouterDeps) *gin.Engine {
@@ -30,18 +31,31 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 		h := handlers.NewFolderHandler(deps.FolderService)
 		folders.POST("", h.CreateFolder)
 		folders.GET("", h.ListFolders)
-		folders.GET("/:id", h.GetFolderByID)
-		folders.DELETE("/:id", h.DeleteFolder)
+		folders.GET("/:folderId", h.GetFolderByID)
+		folders.DELETE("/:folderId", h.DeleteFolder)
+
+		// Folder sharing endpoints
+		sharingHandler := handlers.NewSharingHandler(deps.SharingService)
+		folders.POST("/:folderId/share", sharingHandler.ShareFolder)
+		folders.DELETE("/:folderId/share/:userId", sharingHandler.RevokeFolderSharing)
+		folders.GET("/:folderId/share", sharingHandler.ListFolderSharings)
 	}
 
 	notes := v1.Group("/notes")
+	notes.Use(middlewares.AuthMiddleware())
 	{
 		h := handlers.NewNoteHandler(deps.NoteService)
 		notes.POST("", h.CreateNote)
 		notes.GET("", h.ListNotes)
-		notes.GET("/:id", h.GetNote)
-		notes.PUT("/:id", h.UpdateNote)
-		notes.DELETE("/:id", h.DeleteNote)
+		notes.GET("/:noteId", h.GetNote)
+		notes.PUT("/:noteId", h.UpdateNote)
+		notes.DELETE("/:noteId", h.DeleteNote)
+
+		// Note sharing endpoints
+		sharingHandler := handlers.NewSharingHandler(deps.SharingService)
+		notes.POST("/:noteId/share", sharingHandler.ShareNote)
+		notes.DELETE("/:noteId/share/:userId", sharingHandler.RevokeNoteSharing)
+		notes.GET("/:noteId/share", sharingHandler.ListNoteSharings)
 	}
 
 	return r
