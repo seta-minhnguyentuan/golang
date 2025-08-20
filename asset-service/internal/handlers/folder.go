@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type FolderHandler struct {
@@ -25,7 +26,14 @@ func (h *FolderHandler) CreateFolder(c *gin.Context) {
 		return
 	}
 
-	result, err := h.svc.CreateFolder(req.Name)
+	// Get user ID from auth middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	result, err := h.svc.CreateFolder(req.Name, userID.(uuid.UUID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,7 +43,14 @@ func (h *FolderHandler) CreateFolder(c *gin.Context) {
 }
 
 func (h *FolderHandler) ListFolders(c *gin.Context) {
-	result, err := h.svc.ListFolders()
+	// Get user ID from auth middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	result, err := h.svc.ListFolders(userID.(uuid.UUID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -47,7 +62,14 @@ func (h *FolderHandler) ListFolders(c *gin.Context) {
 func (h *FolderHandler) GetFolderByID(c *gin.Context) {
 	id := c.Param("folderId")
 
-	result, err := h.svc.GetFolderByID(id)
+	// Get user ID from auth middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	result, err := h.svc.GetFolderByID(id, userID.(uuid.UUID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -59,7 +81,14 @@ func (h *FolderHandler) GetFolderByID(c *gin.Context) {
 func (h *FolderHandler) DeleteFolder(c *gin.Context) {
 	id := c.Param("folderId")
 
-	err := h.svc.DeleteFolder(id)
+	// Get user ID from auth middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	err := h.svc.DeleteFolder(id, userID.(uuid.UUID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

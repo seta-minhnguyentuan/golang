@@ -5,7 +5,7 @@ import { apolloClient } from './services/userService';
 import Login from './components/Login';
 import Header from './components/Header';
 import Teams from './components/Teams';
-import Assets from './components/Assets';
+import AssetsEnhanced from './components/AssetsEnhanced';
 import './App.css';
 
 const AppContent: React.FC = () => {
@@ -34,7 +34,7 @@ const AppContent: React.FC = () => {
         </button>
       </nav>
       <main className="main-content">
-        {activeTab === 'teams' ? <Teams /> : <Assets />}
+        {activeTab === 'teams' ? <Teams /> : <AssetsEnhanced />}
       </main>
     </div>
   );

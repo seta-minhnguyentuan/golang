@@ -11,6 +11,7 @@ type FolderRepository interface {
 	CreateFolder(folder *models.Folder) error
 	GetFolderByID(id uuid.UUID) (*models.Folder, error)
 	ListFolders() ([]models.Folder, error)
+	ListFoldersByOwner(ownerID uuid.UUID) ([]models.Folder, error)
 	DeleteFolder(id uuid.UUID) error
 }
 
@@ -28,7 +29,7 @@ func (r *folderRepository) CreateFolder(folder *models.Folder) error {
 
 func (r *folderRepository) GetFolderByID(id uuid.UUID) (*models.Folder, error) {
 	var folder models.Folder
-	err := r.db.Where("id = ?", id).First(&folder).Error
+	err := r.db.Preload("Notes").Preload("Sharings").Where("id = ?", id).First(&folder).Error
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,13 @@ func (r *folderRepository) GetFolderByID(id uuid.UUID) (*models.Folder, error) {
 
 func (r *folderRepository) ListFolders() ([]models.Folder, error) {
 	var folders []models.Folder
-	err := r.db.Find(&folders).Error
+	err := r.db.Preload("Notes").Preload("Sharings").Find(&folders).Error
+	return folders, err
+}
+
+func (r *folderRepository) ListFoldersByOwner(ownerID uuid.UUID) ([]models.Folder, error) {
+	var folders []models.Folder
+	err := r.db.Preload("Notes").Preload("Sharings").Where("owner_id = ?", ownerID).Find(&folders).Error
 	return folders, err
 }
 

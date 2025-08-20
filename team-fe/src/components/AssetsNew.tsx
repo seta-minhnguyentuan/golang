@@ -125,7 +125,7 @@ const Assets: React.FC = () => {
                     }}>
                       Delete
                     </button>
-                    {teams.length > 0 && (
+                    {teams?.length > 0 && (
                       <button onClick={(e) => {
                         e.stopPropagation();
                         setSelectedFolderId(folder.id);

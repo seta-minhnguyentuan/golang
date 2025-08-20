@@ -3,15 +3,16 @@ package services
 import (
 	"asset-service/internal/models"
 	"asset-service/internal/repository"
+	"fmt"
 
 	"github.com/google/uuid"
 )
 
 type FolderService interface {
-	CreateFolder(name string) (any, error)
-	GetFolderByID(id string) (any, error)
-	ListFolders() ([]any, error)
-	DeleteFolder(id string) error
+	CreateFolder(name string, userID uuid.UUID) (any, error)
+	GetFolderByID(id string, userID uuid.UUID) (any, error)
+	ListFolders(userID uuid.UUID) ([]any, error)
+	DeleteFolder(id string, userID uuid.UUID) error
 }
 
 type folderService struct {
@@ -22,9 +23,12 @@ func NewFolderService(repo repository.FolderRepository) FolderService {
 	return &folderService{repo: repo}
 }
 
-func (s *folderService) CreateFolder(name string) (any, error) {
+func (s *folderService) CreateFolder(name string, userID uuid.UUID) (any, error) {
 	folder := &models.Folder{
-		Name: name,
+		Name:      name,
+		OwnerID:   userID,
+		CreatedBy: userID,
+		UpdatedBy: userID,
 	}
 
 	err := s.repo.CreateFolder(folder)
@@ -35,7 +39,7 @@ func (s *folderService) CreateFolder(name string) (any, error) {
 	return folder, nil
 }
 
-func (s *folderService) GetFolderByID(id string) (any, error) {
+func (s *folderService) GetFolderByID(id string, userID uuid.UUID) (any, error) {
 	folderID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
@@ -46,11 +50,16 @@ func (s *folderService) GetFolderByID(id string) (any, error) {
 		return nil, err
 	}
 
+	// Check if user owns the folder
+	if folder.OwnerID != userID {
+		return nil, fmt.Errorf("only the folder owner can access this folder")
+	}
+
 	return folder, nil
 }
 
-func (s *folderService) ListFolders() ([]any, error) {
-	folders, err := s.repo.ListFolders()
+func (s *folderService) ListFolders(userID uuid.UUID) ([]any, error) {
+	folders, err := s.repo.ListFoldersByOwner(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -63,10 +72,20 @@ func (s *folderService) ListFolders() ([]any, error) {
 	return result, nil
 }
 
-func (s *folderService) DeleteFolder(id string) error {
+func (s *folderService) DeleteFolder(id string, userID uuid.UUID) error {
 	folderID, err := uuid.Parse(id)
 	if err != nil {
 		return err
+	}
+
+	// First check if user owns the folder
+	folder, err := s.repo.GetFolderByID(folderID)
+	if err != nil {
+		return err
+	}
+
+	if folder.OwnerID != userID {
+		return fmt.Errorf("only the folder owner can delete this folder")
 	}
 
 	return s.repo.DeleteFolder(folderID)
