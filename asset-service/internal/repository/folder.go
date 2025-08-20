@@ -12,6 +12,7 @@ type FolderRepository interface {
 	GetFolderByID(id uuid.UUID) (*models.Folder, error)
 	ListFolders() ([]models.Folder, error)
 	ListFoldersByOwner(ownerID uuid.UUID) ([]models.Folder, error)
+	ListFoldersByOwnerOrShared(userID uuid.UUID) ([]models.Folder, error)
 	DeleteFolder(id uuid.UUID) error
 }
 
@@ -45,6 +46,16 @@ func (r *folderRepository) ListFolders() ([]models.Folder, error) {
 func (r *folderRepository) ListFoldersByOwner(ownerID uuid.UUID) ([]models.Folder, error) {
 	var folders []models.Folder
 	err := r.db.Preload("Notes").Preload("Sharings").Where("owner_id = ?", ownerID).Find(&folders).Error
+	return folders, err
+}
+
+func (r *folderRepository) ListFoldersByOwnerOrShared(userID uuid.UUID) ([]models.Folder, error) {
+	var folders []models.Folder
+	err := r.db.Preload("Notes").Preload("Sharings").
+		Where("owner_id = ? OR id IN (?)",
+			userID,
+			r.db.Table("folder_sharings").Select("folder_id").Where("user_id = ?", userID)).
+		Find(&folders).Error
 	return folders, err
 }
 

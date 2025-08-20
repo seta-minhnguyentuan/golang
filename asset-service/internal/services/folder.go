@@ -50,16 +50,26 @@ func (s *folderService) GetFolderByID(id string, userID uuid.UUID) (any, error) 
 		return nil, err
 	}
 
-	// Check if user owns the folder
-	if folder.OwnerID != userID {
-		return nil, fmt.Errorf("only the folder owner can access this folder")
+	// Check if user owns the folder or has it shared with them
+	hasAccess := folder.OwnerID == userID
+	if !hasAccess {
+		for _, sharing := range folder.Sharings {
+			if sharing.UserID == userID {
+				hasAccess = true
+				break
+			}
+		}
+	}
+
+	if !hasAccess {
+		return nil, fmt.Errorf("access denied: you don't have permission to view this folder")
 	}
 
 	return folder, nil
 }
 
 func (s *folderService) ListFolders(userID uuid.UUID) ([]any, error) {
-	folders, err := s.repo.ListFoldersByOwner(userID)
+	folders, err := s.repo.ListFoldersByOwnerOrShared(userID)
 	if err != nil {
 		return nil, err
 	}

@@ -29,7 +29,19 @@ func (h *NoteHandler) CreateNote(c *gin.Context) {
 		return
 	}
 
-	note, err := h.NoteService.CreateNote(req.Title, req.Content, req.FolderID)
+	// Extract user ID from context
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	note, err := h.NoteService.CreateNote(req.Title, req.Content, req.FolderID, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -39,7 +51,19 @@ func (h *NoteHandler) CreateNote(c *gin.Context) {
 }
 
 func (h *NoteHandler) ListNotes(c *gin.Context) {
-	notes, err := h.NoteService.ListNotes()
+	// Extract user ID from context
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	notes, err := h.NoteService.ListNotes(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,7 +74,20 @@ func (h *NoteHandler) ListNotes(c *gin.Context) {
 
 func (h *NoteHandler) GetNote(c *gin.Context) {
 	id := c.Param("noteId")
-	note, err := h.NoteService.GetNote(id)
+
+	// Extract user ID from context
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	note, err := h.NoteService.GetNote(id, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -70,7 +107,20 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 	}
 
 	id := c.Param("noteId")
-	updatedNote, err := h.NoteService.UpdateNote(id, req)
+
+	// Extract user ID from context
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	updatedNote, err := h.NoteService.UpdateNote(id, req, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,7 +131,20 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 
 func (h *NoteHandler) DeleteNote(c *gin.Context) {
 	id := c.Param("noteId")
-	if err := h.NoteService.DeleteNote(id); err != nil {
+
+	// Extract user ID from context
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	if err := h.NoteService.DeleteNote(id, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

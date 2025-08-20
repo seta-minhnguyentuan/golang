@@ -34,7 +34,7 @@ func main() {
 	folderSvc := services.NewFolderService(folderRepo)
 
 	noteRepo := repository.NewNoteRepository(db)
-	noteSvc := services.NewNoteService(noteRepo)
+	noteSvc := services.NewNoteService(noteRepo, folderRepo)
 
 	sharingRepo := repository.NewSharingRepository(db)
 	sharingSvc := services.NewSharingService(sharingRepo, folderRepo, noteRepo)
