@@ -1,11 +1,15 @@
 package config
 
+import (
+	"shared/utils"
+)
+
 type ServerConfig struct {
 	Port string
 }
 
 func LoadServerConfig() ServerConfig {
 	return ServerConfig{
-		Port: getEnv("SERVER_PORT", "7070"),
+		Port: utils.GetEnv("SERVER_PORT", "7070"),
 	}
 }

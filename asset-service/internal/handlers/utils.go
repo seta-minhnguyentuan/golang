@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ExtractUserID extracts the user ID from the Gin context
 func ExtractUserID(c *gin.Context) (uuid.UUID, error) {
 	userIDValue, exists := c.Get("userID")
 	if !exists {
@@ -25,7 +24,6 @@ func ExtractUserID(c *gin.Context) (uuid.UUID, error) {
 	return userID, nil
 }
 
-// Custom errors
 var (
 	ErrUserNotAuthenticated = fmt.Errorf("user not authenticated")
 	ErrInvalidUserIDFormat  = fmt.Errorf("invalid user ID format")

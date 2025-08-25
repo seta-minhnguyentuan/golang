@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
-	"os"
+	"shared/utils"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -27,18 +27,18 @@ func LoadDB() *DatabaseConfig {
 		return cfg
 	}
 
-	port, err := strconv.Atoi(getEnv("DB_PORT", "5432"))
+	port, err := strconv.Atoi(utils.GetEnv("DB_PORT", "5432"))
 	if err != nil {
 		log.Fatalf("Invalid DB_PORT: %v", err)
 	}
 
 	cfg = &DatabaseConfig{
-		DBHost:    getEnv("DB_HOST", "localhost"),
-		DBUser:    getEnv("DB_USER", "postgres"),
-		DBPass:    getEnv("DB_PASSWORD", ""),
-		DBName:    getEnv("DB_NAME", "postgres"),
+		DBHost:    utils.GetEnv("DB_HOST", "localhost"),
+		DBUser:    utils.GetEnv("DB_USER", "postgres"),
+		DBPass:    utils.GetEnv("DB_PASSWORD", ""),
+		DBName:    utils.GetEnv("DB_NAME", "postgres"),
 		DBPort:    port,
-		DBSSLMode: getEnv("DB_SSLMODE", "disable"),
+		DBSSLMode: utils.GetEnv("DB_SSLMODE", "disable"),
 	}
 
 	return cfg
@@ -49,11 +49,4 @@ func (c *DatabaseConfig) DSN() string {
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
 		c.DBHost, c.DBUser, c.DBPass, c.DBName, c.DBPort, c.DBSSLMode,
 	)
-}
-
-func getEnv(key, defaultVal string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultVal
 }

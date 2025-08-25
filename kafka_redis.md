@@ -27,7 +27,6 @@ These exercises help integrate **Kafka** into the Team Management and Asset Shar
   ```
 - **Consumer Suggestions**:
   - Log to database or ElasticSearch.
-  - Send notifications to team members or admin UI.
 
 ---
 

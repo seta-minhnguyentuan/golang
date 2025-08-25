@@ -26,7 +26,6 @@ func (h *TeamHandler) CreateTeam(c *gin.Context) {
 		return
 	}
 
-	// Get user ID from JWT claims
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
@@ -107,7 +106,6 @@ func (h *TeamHandler) AddMember(c *gin.Context) {
 		return
 	}
 
-	// Get requestor ID from JWT claims
 	requestorID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
@@ -143,7 +141,6 @@ func (h *TeamHandler) RemoveMember(c *gin.Context) {
 		return
 	}
 
-	// Get requestor ID from JWT claims
 	requestorID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
@@ -184,7 +181,6 @@ func (h *TeamHandler) AddManager(c *gin.Context) {
 		return
 	}
 
-	// Get requestor ID from JWT claims
 	requestorID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
@@ -220,7 +216,6 @@ func (h *TeamHandler) RemoveManager(c *gin.Context) {
 		return
 	}
 
-	// Get requestor ID from JWT claims
 	requestorID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})

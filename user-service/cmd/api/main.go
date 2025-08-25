@@ -30,15 +30,12 @@ func main() {
 	}
 	log.Println("✅ Migrations completed")
 
-	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 	teamRepo := repository.NewTeamRepository(db)
 
-	// Initialize services
 	userService := services.NewUserService(userRepo)
 	teamService := services.NewTeamService(teamRepo, userRepo)
 
-	// Setup router with dependencies
 	engine := httpserver.NewRouter(httpserver.RouterDeps{
 		UserService: userService,
 		TeamService: teamService,

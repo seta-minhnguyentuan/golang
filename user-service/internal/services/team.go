@@ -33,7 +33,6 @@ func NewTeamService(teamRepo repository.TeamRepository, userRepo repository.User
 }
 
 func (s *TeamServiceImpl) CreateTeam(ctx context.Context, req models.CreateTeamRequest, creatorID uuid.UUID) (*models.TeamResponse, error) {
-	// Verify that the creator is a manager
 	creator, err := s.UserRepo.FindByID(ctx, creatorID)
 	if err != nil {
 		return nil, errors.New("creator not found")
@@ -43,7 +42,6 @@ func (s *TeamServiceImpl) CreateTeam(ctx context.Context, req models.CreateTeamR
 		return nil, errors.New("only managers can create teams")
 	}
 
-	// Create the team
 	team := &models.Team{
 		ID:        uuid.New(),
 		TeamName:  req.TeamName,
@@ -56,7 +54,6 @@ func (s *TeamServiceImpl) CreateTeam(ctx context.Context, req models.CreateTeamR
 		return nil, err
 	}
 
-	// Add the creator as a manager
 	creatorMember := &models.TeamMember{
 		ID:       uuid.New(),
 		TeamID:   createdTeam.ID,

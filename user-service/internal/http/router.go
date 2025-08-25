@@ -23,7 +23,6 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
-	// CORS middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:4173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -39,15 +38,13 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 
 	h := handlers.NewHandlers(deps.UserService, deps.TeamService)
 
-	// GraphQL routes for user service
 	userGroup := r.Group("/user")
-	// userGroup.Use(middlewares.AuthMiddleware())
+	userGroup.Use(middlewares.AuthMiddleware())
 	{
 		userGroup.POST("/query", graphQLHandler(deps.UserService))
 		userGroup.GET("/query", graphQLPlayground())
 	}
 
-	// REST API routes for teams
 	teamsGroup := r.Group("/teams")
 	teamsGroup.Use(middlewares.AuthMiddleware())
 	{
